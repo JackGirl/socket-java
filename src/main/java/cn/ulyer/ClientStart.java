@@ -3,6 +3,7 @@ package cn.ulyer;
 import java.io.*;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.concurrent.CompletableFuture;
 
 public class ClientStart {
 
@@ -13,13 +14,27 @@ public class ClientStart {
         PrintWriter writer = new PrintWriter(socket.getOutputStream());
         BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         Scanner scanner = new Scanner(System.in);
+        final boolean[] status = {true};
+        CompletableFuture.runAsync(()->{
+            while(status[0]){
+                try{
+                    String s = reader.readLine();
+                    if (s!=null){
+                        System.out.println(s);
+                    }
+                }catch (Exception e){
+                    status[0] =false;
+                }
+            }
+
+
+        });
         while (true){
             String s = scanner.nextLine();
             writer.write(s+"\n");
             writer.flush();
-            String result =  reader.readLine();
-            System.out.println(result);
         }
+
     }
 
 

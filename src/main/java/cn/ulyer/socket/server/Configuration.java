@@ -1,14 +1,21 @@
 package cn.ulyer.socket.server;
 
 import cn.hutool.core.lang.Assert;
-import cn.ulyer.socket.server.command.*;
-import cn.ulyer.socket.server.link.Link;
-import cn.ulyer.socket.server.security.DefaultSecurityManager;
-import cn.ulyer.socket.server.security.ServerSecurityManager;
-import cn.ulyer.socket.server.store.LinkStore;
-import cn.ulyer.socket.server.store.MapLinkStore;
+import cn.ulyer.socket.command.*;
+import cn.ulyer.socket.context.LinkContext;
+import cn.ulyer.socket.event.listener.Listener;
+import cn.ulyer.socket.handler.DefaultErrorHandler;
+import cn.ulyer.socket.handler.DefaultMessageHandler;
+import cn.ulyer.socket.handler.ErrorHandler;
+import cn.ulyer.socket.handler.MessageHandler;
+import cn.ulyer.socket.security.DefaultSecurityManager;
+import cn.ulyer.socket.security.ServerSecurityManager;
+import cn.ulyer.socket.store.LinkStore;
+import cn.ulyer.socket.store.MapLinkStore;
 
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,10 +27,15 @@ public class Configuration {
 
     private LinkStore linkStore = new MapLinkStore();
 
+    private final Collection<Listener> listeners = new LinkedList<>();
+
     private ServerSecurityManager serverSecurityManager = new DefaultSecurityManager();
 
     private CommandResolver commandResolver = new DefaultCommandResolver();
 
+    private MessageHandler messageHandler = new DefaultMessageHandler();
+
+    private ErrorHandler errorHandler = new DefaultErrorHandler();
 
     private Configuration(){
         commandMap.put("login", LoginCommand.class);
@@ -35,10 +47,14 @@ public class Configuration {
     }
 
 
-    public static Configuration newConfiguration(){
+    public static Configuration newConfig(){
         return new Configuration();
     }
 
+    /**
+     * 连接存储
+     * @param linkStore
+     */
     public void setLinkStore(LinkStore linkStore){
         this.linkStore = linkStore;
     }
@@ -75,8 +91,8 @@ public class Configuration {
         }
     }
 
-    public Command resolverCommand(Server server, Link link, String value){
-        return commandResolver.resolverCommand(this,server,link,value);
+    public Command resolverCommand(LinkContext context, String value){
+        return commandResolver.resolverCommand(context,value);
     }
 
     public Command newInstanceCommand(String commandName)  {
@@ -93,8 +109,27 @@ public class Configuration {
         }
     }
 
+    public void registerListener(Listener listener){
+        listeners.add(listener);
+    }
 
+    public Collection<Listener> getListeners() {
+        return listeners;
+    }
 
+    public MessageHandler getMessageHandler() {
+        return messageHandler;
+    }
 
+    public void setMessageHandler(MessageHandler messageHandler) {
+        this.messageHandler = messageHandler;
+    }
 
+    public ErrorHandler getErrorHandler() {
+        return errorHandler;
+    }
+
+    public void setErrorHandler(ErrorHandler errorHandler) {
+        this.errorHandler = errorHandler;
+    }
 }

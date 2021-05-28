@@ -2,10 +2,11 @@ package cn.ulyer.socket.server;
 
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.ulyer.socket.AbstractServer;
-import cn.ulyer.socket.server.command.Command;
-import cn.ulyer.socket.server.command.LogoutCommand;
-import cn.ulyer.socket.server.link.SocketLink;
+import cn.ulyer.socket.command.Command;
+import cn.ulyer.socket.command.LogoutCommand;
+import cn.ulyer.socket.context.LinkContext;
+import cn.ulyer.socket.link.Link;
+import cn.ulyer.socket.link.SocketLink;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * 阻塞服务器
+ */
 @Setter
 @Getter
 @Slf4j
@@ -51,43 +55,16 @@ public class BlockServer extends AbstractServer {
 
                     log.error("socket link error:{}", ExceptionUtil.stacktraceToString(e));
                 }
-                executor.execute(new DefaultWorkRunner(this, socketLink));
-            }
-    }
 
-
-    static class DefaultWorkRunner implements Runnable {
-
-        private Server server;
-
-        private SocketLink socketLink;
-
-
-        public DefaultWorkRunner(Server server, SocketLink socketLink) throws IOException {
-            this.server = server;
-            this.socketLink = socketLink;
-        }
-
-        @Override
-        public void run() {
-            String s;
-            while (!socketLink.isClosed()) {
-                try {
-                    s = socketLink.readLine();
-                    if (s != null) {
-                        log.info("received one message:" + s);
-                        Command command = server.getConfiguration().resolverCommand(server, socketLink, s);
-                        server.getConfiguration().getServerSecurityManager().checkCommand(command);
-                        command.execute();
+                executor.execute(new AbstractWorker(new LinkContext(this,this.configuration,socketLink)) {
+                    @Override
+                    protected void startWorker() {
+                        super.startWorker();
                     }
-                } catch (IOException e) {
-                    log.error("socket task error ：{}", ExceptionUtil.stacktraceToString(e));
-                    socketLink.close();
-                    new LogoutCommand().setClientLink(socketLink).setServer(this.server).execute();
-                }
+                });
             }
-
-        }
     }
+
+
 
 }

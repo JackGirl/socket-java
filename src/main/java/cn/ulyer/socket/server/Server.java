@@ -1,5 +1,7 @@
 package cn.ulyer.socket.server;
 
+import cn.ulyer.socket.event.Event;
+
 import java.io.IOException;
 
 public interface Server {
@@ -15,6 +17,8 @@ public interface Server {
     int getPort();
 
     String getId();
+
+    void publishEvent(Event event);
 
 
 }

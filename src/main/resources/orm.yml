@@ -2,6 +2,6 @@
 mapperLocations:
   - mapper
 basePackages:
-  - cn.ulyer.socket.server.db
+  - cn.ulyer.socket.db
 pluginClasses:
   - cn.ulyer.orm.plugin.PageInterceptor
