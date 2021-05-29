@@ -46,7 +46,7 @@ public class BlockServer extends AbstractServer {
                     InputStream clientInput = socket.getInputStream();
                     socketLink = new SocketLink(socket);
                     if(this.configuration.getServerSecurityManager().checkLink(socketLink)){
-                        executor.execute(new AbstractWorker(new LinkContext(this,this.configuration,socketLink)) {
+                        executor.execute(new AbstractWorker(new LinkContext(this,this.configuration,socketLink),true) {
                             @Override
                             protected void startWorker() {
                                 super.startWorker();
@@ -58,7 +58,7 @@ public class BlockServer extends AbstractServer {
                     log.info("has one connected :" + socket.getInetAddress().getHostName());
                 } catch (Exception e) {
 
-                    log.error("socket link error:{}", ExceptionUtil.stacktraceToString(e));
+                    log.error("socket running error:{}", ExceptionUtil.stacktraceToString(e));
                 }
             }
     }

@@ -13,39 +13,41 @@ import java.io.IOException;
 import java.util.Map;
 
 @Slf4j
-public abstract class AbstractWorker implements Runnable{
+public abstract class AbstractWorker extends Thread implements Runnable {
 
     protected LinkContext context;
 
-    public AbstractWorker(LinkContext context){
+    public AbstractWorker(LinkContext context,boolean damon) {
         this.context = context;
+        this.setDaemon(true);
     }
 
-    protected void startWorker(){
+    protected void startWorker() {
         String s;
-        while (!context.getLink().isClosed()) {
-            try {
+        try {
+            while (!context.getLink().isClosed()) {
                 s = context.getLink().readLine();
                 if (s != null) {
                     log.info("received one command:" + s);
-                    CMD command = context.getConfiguration().resolverCommand(context, CharUtil.encode(s));
+                    CMD command = context.getConfiguration().resolverCommand(context, s);
                     command.execute();
                 }
-            } catch (IOException e) {
-                log.error("socket task error ：{}", ExceptionUtil.stacktraceToString(e));
-                new LogoutCommand().execute();
-                context.getLink().close();
             }
+        } catch (IOException e) {
+            log.error("socket task error ：{}", ExceptionUtil.stacktraceToString(e));
         }
+        new LogoutCommand().execute();
+        context.getLink().close();
+
     }
 
     @Override
     public void run() {
         LinkContext.setContext(context);
-        Map<String,String> result = MapUtil.newHashMap();
-        result.put("c",null);
+        Map<String, String> result = MapUtil.newHashMap();
+        result.put("c", null);
         ShowCommand s
-         = new ShowCommand();
+                = new ShowCommand();
         s.setArgMap(result).execute();
         this.startWorker();
     }

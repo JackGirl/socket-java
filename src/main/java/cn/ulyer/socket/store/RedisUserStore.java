@@ -39,8 +39,9 @@ public class RedisUserStore implements UserStore{
         if(CollectionUtil.isEmpty(mapUser)){
             return CollectionUtil.newArrayList();
         }
-        List<User> user = mapUser.entrySet().stream().map(e->JSON.parseObject(e.getValue(),User.class)).collect(Collectors.toList());
-        return user;
+        List list = new ArrayList(16);
+        mapUser.forEach((k,v)->list.add(JSON.parseObject(v,User.class)));
+        return list;
     }
 
     @Override

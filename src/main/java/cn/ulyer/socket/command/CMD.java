@@ -1,5 +1,6 @@
 package cn.ulyer.socket.command;
 
+import java.io.IOException;
 import java.util.Map;
 
 public interface CMD {

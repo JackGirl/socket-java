@@ -1,16 +1,16 @@
 package cn.ulyer.socket.util;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
 
 public class CharUtil {
 
 
-    private final static String GBK = "GBK";
+    public final static String ENCODE = "UTF-8";
 
 
 
     public static String encode(String msg){
-        return new String(msg.getBytes(StandardCharsets.UTF_8));
+        return new String(msg.getBytes(Charset.forName(ENCODE)));
     }
 
     public static String changeLine(){
@@ -18,7 +18,7 @@ public class CharUtil {
     }
 
     public static String enter(){
-        return "\r\n";
+        return "\n";
     }
 
 

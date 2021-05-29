@@ -1,6 +1,11 @@
 package cn.ulyer;
 
-import java.io.*;
+import cn.ulyer.socket.util.CharUtil;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Scanner;
 import java.util.concurrent.CompletableFuture;
@@ -9,10 +14,10 @@ public class ClientStart {
 
 
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("127.0.0.1",8080);
-
+        Socket socket = new Socket(System.getProperty("server.host"),Integer.valueOf(System.getProperty("server.port")));
+        socket.setKeepAlive(true);
         PrintWriter writer = new PrintWriter(socket.getOutputStream());
-        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), CharUtil.ENCODE));
         Scanner scanner = new Scanner(System.in);
         final boolean[] status = {true};
         CompletableFuture.runAsync(()->{

@@ -5,10 +5,7 @@ import cn.ulyer.socket.model.User;
 import cn.ulyer.socket.util.CharUtil;
 import lombok.extern.slf4j.Slf4j;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.util.Optional;
 
@@ -22,26 +19,28 @@ public class SocketLink implements Link{
 
     PrintWriter writer ;
 
-    BufferedReader reader;
+    InputStream stream ;
 
+    BufferedReader  reader;
 
 
     public SocketLink(Socket socket) throws IOException {
-        this.writer =  new PrintWriter(socket.getOutputStream());
-        this.reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+        this.writer =  new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),CharUtil.ENCODE));
+        stream = socket.getInputStream();
+        this.reader = new BufferedReader(new InputStreamReader(stream,CharUtil.ENCODE));
         this.socket = socket;
     }
 
     @Override
     public void writeToClient(String msg) {
-        writer.write(CharUtil.encode(msg)+CharUtil.enter());
+        log.info("send message :{}",msg);
+        writer.print(msg+CharUtil.enter());
         writer.flush();
     }
 
     @Override
     public String readLine() throws IOException {
-        String s =  reader.readLine();
-        return s!=null?CharUtil.encode(s):null;
+           return  reader.readLine();
     }
 
 

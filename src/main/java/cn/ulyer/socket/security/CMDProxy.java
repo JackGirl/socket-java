@@ -41,12 +41,7 @@ public class CMDProxy implements InvocationHandler {
         LinkContext context = LinkContext.get();
         ServerSecurityManager serverSecurityManager =context.getConfiguration().getServerSecurityManager();
         if(serverSecurityManager.checkCommand(command)){
-            try{
                 command.execute();
-            }catch (Exception e){
-                new ErrorCommand("命令运行异常"+ ExceptionUtil.stacktraceToString(e)).execute();
-            }
-
         }
         return null;
     }

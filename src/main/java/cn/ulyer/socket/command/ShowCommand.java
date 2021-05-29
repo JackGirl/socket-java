@@ -10,6 +10,7 @@ import cn.ulyer.socket.util.CharUtil;
 import cn.ulyer.socket.util.MessageFormatter;
 import lombok.NoArgsConstructor;
 
+import java.io.IOException;
 import java.util.Collection;
 
 @NoArgsConstructor
@@ -41,6 +42,7 @@ public class ShowCommand extends Command {
         String[] list = uCommand.split("-");
         if (list.length < 2) {
             new ErrorCommand("参数错误").execute();
+            return;
         }
         UserStore userStore = linkContext.getConfiguration().getUserStore();
         Collection<User> users = userStore.range(Integer.parseInt(list[0]), Integer.parseInt(list[1]));

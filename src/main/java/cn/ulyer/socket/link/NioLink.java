@@ -35,6 +35,7 @@ public class NioLink implements Link{
     public String readLine() throws IOException {
         ByteBuffer buffer =  ByteBuffer.allocate(256);
          channel.read(buffer);
+         buffer.flip();
          return new String(buffer.array(),StandardCharsets.UTF_8);
     }
 

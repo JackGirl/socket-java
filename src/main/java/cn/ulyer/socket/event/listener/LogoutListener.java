@@ -15,13 +15,15 @@ public class LogoutListener implements Listener{
     public void onEvent(Event event) {
         LogoutEvent logoutEvent = (LogoutEvent) event;
         User user = (User) logoutEvent.getSource();
-        LinkContext context = LinkContext.get();
-        UserStore userStore = context.getConfiguration().getUserStore();
-        userStore.remove(user.getUsername());
-        LinkStore linkStore = context.getConfiguration().getLinkStore();
-        linkStore.remove(user.getUsername());
-        context.setUser(null);
-        context.getLink().setUser(null);
+        if(user!=null){
+            LinkContext context = LinkContext.get();
+            UserStore userStore = context.getConfiguration().getUserStore();
+            userStore.remove(user.getUsername());
+            LinkStore linkStore = context.getConfiguration().getLinkStore();
+            linkStore.remove(user.getUsername());
+            context.setUser(null);
+            context.getLink().setUser(null);
+        }
     }
 
     @Override

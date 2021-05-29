@@ -1,6 +1,7 @@
 package cn.ulyer.socket.server;
 
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.ulyer.socket.event.Event;
 import cn.ulyer.socket.event.listener.Listener;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +69,7 @@ public abstract class AbstractServer implements Server {
                     next.onEvent(event);
                 }
             }catch (Exception e){
+                log.error("error on event:{}", ExceptionUtil.stacktraceToString(e));
                 this.configuration.getErrorHandler().handler(e);
             }
         }

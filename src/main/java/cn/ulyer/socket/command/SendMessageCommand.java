@@ -8,6 +8,7 @@ import cn.ulyer.socket.model.User;
 import cn.ulyer.socket.store.LinkStore;
 import cn.ulyer.socket.util.MessageFormatter;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -15,7 +16,7 @@ public class SendMessageCommand extends Command {
 
 
     @Override
-    public void execute() {
+    public void execute()  {
         LinkContext linkContext = LinkContext.get();
         User user = linkContext.getUser();
         boolean privateMessage = argMap.containsKey("r");
@@ -48,7 +49,7 @@ public class SendMessageCommand extends Command {
         while (linkIterator.hasNext()) {
             Link link = linkIterator.next();
             if(link.getUser().equals(linkContext.getLink().getUser())){
-                link.writeToClient(MessageFormatter.formatterNickMessage(MessageType.PUBLIC_MESSAGE.getPrefix(),message,"你"));
+                linkContext.getLink().writeToClient(MessageFormatter.formatterNickMessage(MessageType.PUBLIC_MESSAGE.getPrefix(),message,"你"));
             }else{
                 link.writeToClient(MessageFormatter.formatterNickMessage(MessageType.PUBLIC_MESSAGE.getPrefix(),message,user.getName()));
             }

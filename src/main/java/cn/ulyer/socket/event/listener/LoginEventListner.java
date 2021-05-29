@@ -23,7 +23,7 @@ public class LoginEventListner implements Listener{
         userStore.store(user);
         context.getLink().setUser(user);
         context.setUser(user);
-        context.getConfiguration().getLinkStore().put(user.getUsername(),context.getLink());
+        store.put(user.getUsername(),context.getLink());
         Collection<? extends Link> links = store.getAllLink();
         for (Link link : links) {
             link.writeToClient(MessageType.SYSTEM_MESSAGE.getPrefix()+user.getName()+"已上线");

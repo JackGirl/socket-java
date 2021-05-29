@@ -8,8 +8,11 @@ import cn.ulyer.socket.event.LoginEvent;
 import cn.ulyer.socket.link.Link;
 import cn.ulyer.socket.model.User;
 import cn.ulyer.socket.store.LinkStore;
+import cn.ulyer.socket.store.UserStore;
 import cn.ulyer.socket.util.MessageFormatter;
 import lombok.NoArgsConstructor;
+
+import java.io.IOException;
 
 
 /**
@@ -22,12 +25,12 @@ public class LoginCommand  extends Command{
 
 
     @Override
-    public void execute() {
+    public void execute()  {
         String username = argMap.get("u");
         String password = argMap.get("p");
         LinkContext linkContext = LinkContext.get();
-        LinkStore store = linkContext.getConfiguration().getLinkStore();
-        Link alreadyLink = store.getLink(username);
+        UserStore store = linkContext.getConfiguration().getUserStore();
+        User alreadyLink = store.getUser(username);
         if(alreadyLink!=null){
             new ErrorCommand("该用户已登录").execute();
             return;

@@ -5,6 +5,7 @@ import cn.ulyer.socket.context.LinkContext;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -21,7 +22,7 @@ public abstract class Command implements CMD{
     String value;
 
     @Override
-    public void execute(){}
+    public void execute()  {}
 
 
     @Override
