@@ -7,7 +7,7 @@ import cn.ulyer.socket.link.Link;
 
 public interface CommandResolver {
 
-    Command resolverCommand(LinkContext context, String value);
+    CMD resolverCommand(LinkContext context, String value);
 
 
 }

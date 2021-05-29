@@ -10,5 +10,10 @@ public class QuitCommand  extends Command{
 
     }
 
+    @Override
+    public String getName() {
+        return "quit";
+    }
+
 
 }

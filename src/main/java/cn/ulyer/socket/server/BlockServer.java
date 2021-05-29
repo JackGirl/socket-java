@@ -2,10 +2,7 @@ package cn.ulyer.socket.server;
 
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.ulyer.socket.command.Command;
-import cn.ulyer.socket.command.LogoutCommand;
 import cn.ulyer.socket.context.LinkContext;
-import cn.ulyer.socket.link.Link;
 import cn.ulyer.socket.link.SocketLink;
 import lombok.Getter;
 import lombok.Setter;
@@ -48,23 +45,23 @@ public class BlockServer extends AbstractServer {
                     Socket socket = serverSocket.accept();
                     InputStream clientInput = socket.getInputStream();
                     socketLink = new SocketLink(socket);
-                    this.configuration.getServerSecurityManager().checkLink(socketLink);
-
+                    if(this.configuration.getServerSecurityManager().checkLink(socketLink)){
+                        executor.execute(new AbstractWorker(new LinkContext(this,this.configuration,socketLink)) {
+                            @Override
+                            protected void startWorker() {
+                                super.startWorker();
+                            }
+                        });
+                    }else{
+                        socketLink.close();
+                    }
                     log.info("has one connected :" + socket.getInetAddress().getHostName());
                 } catch (Exception e) {
 
                     log.error("socket link error:{}", ExceptionUtil.stacktraceToString(e));
                 }
-
-                executor.execute(new AbstractWorker(new LinkContext(this,this.configuration,socketLink)) {
-                    @Override
-                    protected void startWorker() {
-                        super.startWorker();
-                    }
-                });
             }
     }
-
 
 
 }

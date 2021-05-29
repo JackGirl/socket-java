@@ -2,9 +2,6 @@ package cn.ulyer.socket.command;
 
 import cn.hutool.core.util.StrUtil;
 import cn.ulyer.socket.context.LinkContext;
-import cn.ulyer.socket.server.Configuration;
-import cn.ulyer.socket.server.Server;
-import cn.ulyer.socket.link.Link;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -50,18 +47,16 @@ public class DefaultCommandResolver implements CommandResolver{
     }
 
     @Override
-    public Command resolverCommand(LinkContext linkContext, String value) {
+    public CMD resolverCommand(LinkContext linkContext, String value) {
         if(StrUtil.isBlank(value)){
-            return new UnknowCommand().setLinkContext(linkContext);
+            return new UnknowCommand();
         }
         String [] sr = value.split("\\s+");
         String mainCommand = sr[0];
-        Command command = null;
-        command = linkContext.getConfiguration().newInstanceCommand(mainCommand);
+        CMD command = null;
+        command = linkContext.getConfiguration().newCommand(mainCommand);
         Map<String,String> argMap = new LinkedHashMap<>();
-        command.setArgMap(argMap);
-        command.setValue(value).setLinkContext(linkContext)
-                .setMessageHandler(linkContext.getConfiguration().getMessageHandler());
+        command.setValue(value).setArgMap(argMap) ;
         if(sr.length==1){
             return command;
         }

@@ -1,14 +1,14 @@
 package cn.ulyer.socket.security;
 
-import cn.ulyer.socket.command.Command;
+import cn.ulyer.socket.command.CMD;
 import cn.ulyer.socket.link.Link;
 
 public interface ServerSecurityManager {
 
 
-    void checkLink(Link link);
+    boolean checkLink(Link link);
 
-    void checkCommand(Command command);
+    boolean checkCommand(CMD command);
 
 
 }

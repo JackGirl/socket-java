@@ -2,17 +2,17 @@ package cn.ulyer.socket.event;
 
 import cn.ulyer.socket.model.User;
 
-public class LoginEvent implements Event{
+public class LogoutEvent implements Event{
 
     private User user;
 
-    public LoginEvent(User user){
+    public LogoutEvent(User user){
         this.user = user;
     }
 
     @Override
     public String getName() {
-        return "login";
+        return "logout";
     }
 
     @Override

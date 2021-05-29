@@ -4,14 +4,17 @@ import cn.hutool.core.lang.Assert;
 import cn.ulyer.socket.command.*;
 import cn.ulyer.socket.context.LinkContext;
 import cn.ulyer.socket.event.listener.Listener;
+import cn.ulyer.socket.event.listener.LoginEventListner;
+import cn.ulyer.socket.event.listener.LogoutListener;
 import cn.ulyer.socket.handler.DefaultErrorHandler;
-import cn.ulyer.socket.handler.DefaultMessageHandler;
 import cn.ulyer.socket.handler.ErrorHandler;
-import cn.ulyer.socket.handler.MessageHandler;
+import cn.ulyer.socket.security.CMDProxy;
 import cn.ulyer.socket.security.DefaultSecurityManager;
 import cn.ulyer.socket.security.ServerSecurityManager;
 import cn.ulyer.socket.store.LinkStore;
 import cn.ulyer.socket.store.MapLinkStore;
+import cn.ulyer.socket.store.RedisUserStore;
+import cn.ulyer.socket.store.UserStore;
 
 import java.lang.reflect.Constructor;
 import java.util.Collection;
@@ -23,7 +26,7 @@ public class Configuration {
 
     private final  Map<String,Class<? extends Command>> commandMap = new ConcurrentHashMap<>(64);
 
-    private final  Map<String,String> commandExt = new ConcurrentHashMap<>(64);
+    public final  Map<String,String> commandExt = new ConcurrentHashMap<>(64);
 
     private LinkStore linkStore = new MapLinkStore();
 
@@ -33,23 +36,29 @@ public class Configuration {
 
     private CommandResolver commandResolver = new DefaultCommandResolver();
 
-    private MessageHandler messageHandler = new DefaultMessageHandler();
-
     private ErrorHandler errorHandler = new DefaultErrorHandler();
+
+    private UserStore userStore = new RedisUserStore();
 
     private Configuration(){
         commandMap.put("login", LoginCommand.class);
-        commandExt.put("login","登录 \n -u 用户名 -p password");
+        commandExt.put("login","登录  -u 用户名 -p password");
         commandMap.put("logout", LogoutCommand.class);
         commandExt.put("logout","退出登录");
         commandMap.put("send", SendMessageCommand.class);
-        commandExt.put("send","发送信息 -r 指定用户 不加默认所有人 当用户下线");
+        commandExt.put("send","发送信息 -r 指定用户 不加默认所有人 -v 发送的消息");
+        commandMap.put("show",ShowCommand.class);
+        commandExt.put("show","查看 -c 查看可用命令 ");
+        listeners.add(new LoginEventListner());
+        listeners.add(new LogoutListener());
     }
 
 
     public static Configuration newConfig(){
         return new Configuration();
     }
+
+
 
     /**
      * 连接存储
@@ -91,22 +100,27 @@ public class Configuration {
         }
     }
 
-    public Command resolverCommand(LinkContext context, String value){
-        return commandResolver.resolverCommand(context,value);
+    public CMD resolverCommand(LinkContext context, String value){
+       return CMDProxy.proxy(commandResolver.resolverCommand(context,value)) ;
     }
 
-    public Command newInstanceCommand(String commandName)  {
-        Class<? extends Command> clz =this.commandMap.get(commandName);
-        if(clz==null||clz.equals(UnknowCommand.class)){
+    private CMD newCommand(Class<?extends CMD> commandClass){
+        if(commandClass==null||commandClass.equals(UnknowCommand.class)){
             return new UnknowCommand();
         }
         try {
-          Constructor constructor = clz.getConstructor();
-          return (Command) constructor.newInstance();
+            Constructor constructor = commandClass.getConstructor();
+            return (Command) constructor.newInstance();
         } catch (ReflectiveOperationException e) {
             e.printStackTrace();
-            return new SystemErrorCommand();
+            return new ErrorCommand();
         }
+    }
+
+
+    public CMD newCommand(String commandName)  {
+        Class<? extends Command> clz =this.commandMap.get(commandName);
+        return newCommand(clz);
     }
 
     public void registerListener(Listener listener){
@@ -117,13 +131,6 @@ public class Configuration {
         return listeners;
     }
 
-    public MessageHandler getMessageHandler() {
-        return messageHandler;
-    }
-
-    public void setMessageHandler(MessageHandler messageHandler) {
-        this.messageHandler = messageHandler;
-    }
 
     public ErrorHandler getErrorHandler() {
         return errorHandler;
@@ -131,5 +138,14 @@ public class Configuration {
 
     public void setErrorHandler(ErrorHandler errorHandler) {
         this.errorHandler = errorHandler;
+    }
+
+
+    public UserStore getUserStore() {
+        return userStore;
+    }
+
+    public void setUserStore(UserStore userStore) {
+        this.userStore = userStore;
     }
 }

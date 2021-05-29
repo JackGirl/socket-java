@@ -1,6 +1,7 @@
 package cn.ulyer.socket.store;
 
 import cn.ulyer.socket.link.Link;
+import cn.ulyer.socket.model.User;
 
 import java.util.Collection;
 
@@ -14,4 +15,6 @@ public interface LinkStore {
     void remove(String key);
 
     Collection<? extends Link> getAllLink();
+
+
 }

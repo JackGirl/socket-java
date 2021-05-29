@@ -2,6 +2,7 @@ package cn.ulyer.socket.model;
 
 import cn.ulyer.socket.enums.MessageType;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.experimental.Accessors;
 
 import java.util.Date;
@@ -12,6 +13,7 @@ import java.util.Date;
  */
 @Builder
 @Accessors(chain = true)
+@Getter
 public class Message {
 
     private String messageId;
@@ -26,4 +28,5 @@ public class Message {
 
     private String serverId;
 
+    private String content;
 }
