@@ -38,8 +38,12 @@ public class SendMessageCommand extends Command {
                 linkContext.getLink().writeToClient(MessageFormatter.formatterMessage(MessageType.SYSTEM_MESSAGE.getPrefix(), "用户不在线或者用户不存在"));
                 return;
             }
-            toLink.writeToClient(MessageFormatter.formatterNickMessage(MessageType.PRIVATE_MESSAGE.getPrefix(),message,user.getName()+"__你"));
             User toUser = toLink.getUser().get();
+            if(toUser.equals(user)){
+                linkContext.getLink().writeToClient("发送的用户是自己");
+                return;
+            }
+            toLink.writeToClient(MessageFormatter.formatterNickMessage(MessageType.PRIVATE_MESSAGE.getPrefix(),message,user.getName()+"__你"));
             linkContext.getLink().writeToClient(MessageFormatter.formatterNickMessage(MessageType.PRIVATE_MESSAGE.getPrefix(),message,"你__"+toUser.getName()));
             return;
         }

@@ -25,7 +25,7 @@ public class SocketLink implements Link{
 
 
     public SocketLink(Socket socket) throws IOException {
-        this.writer =  new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),CharUtil.ENCODE));
+        this.writer =  new PrintWriter(new OutputStreamWriter(socket.getOutputStream()));
         stream = socket.getInputStream();
         this.reader = new BufferedReader(new InputStreamReader(stream,CharUtil.ENCODE));
         this.socket = socket;
@@ -33,7 +33,6 @@ public class SocketLink implements Link{
 
     @Override
     public void writeToClient(String msg) {
-        log.info("send message :{}",msg);
         writer.print(msg+CharUtil.enter());
         writer.flush();
     }
