@@ -2,6 +2,7 @@ package cn.ulyer.socket.link;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.ulyer.socket.model.User;
+import cn.ulyer.socket.util.CharUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.BufferedReader;
@@ -33,13 +34,14 @@ public class SocketLink implements Link{
 
     @Override
     public void writeToClient(String msg) {
-        writer.write(msg+"\n");
+        writer.write(CharUtil.encode(msg)+CharUtil.enter());
         writer.flush();
     }
 
     @Override
     public String readLine() throws IOException {
-        return reader.readLine();
+        String s =  reader.readLine();
+        return s!=null?CharUtil.encode(s):null;
     }
 
 

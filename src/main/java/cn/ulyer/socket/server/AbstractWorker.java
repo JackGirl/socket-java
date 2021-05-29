@@ -6,6 +6,7 @@ import cn.ulyer.socket.command.CMD;
 import cn.ulyer.socket.command.LogoutCommand;
 import cn.ulyer.socket.command.ShowCommand;
 import cn.ulyer.socket.context.LinkContext;
+import cn.ulyer.socket.util.CharUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
@@ -27,7 +28,7 @@ public abstract class AbstractWorker implements Runnable{
                 s = context.getLink().readLine();
                 if (s != null) {
                     log.info("received one command:" + s);
-                    CMD command = context.getConfiguration().resolverCommand(context, s);
+                    CMD command = context.getConfiguration().resolverCommand(context, CharUtil.encode(s));
                     command.execute();
                 }
             } catch (IOException e) {

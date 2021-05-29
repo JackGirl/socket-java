@@ -6,6 +6,7 @@ import cn.ulyer.socket.context.LinkContext;
 import cn.ulyer.socket.enums.MessageType;
 import cn.ulyer.socket.model.User;
 import cn.ulyer.socket.store.UserStore;
+import cn.ulyer.socket.util.CharUtil;
 import cn.ulyer.socket.util.MessageFormatter;
 import lombok.NoArgsConstructor;
 
@@ -26,9 +27,9 @@ public class ShowCommand extends Command {
         String uCommand = argMap.get("u");
         if (showCommand) {
             StrBuilder builder = new StrBuilder();
-            builder.append(MessageType.SYSTEM_MESSAGE.getPrefix()).append("\r");
+            builder.append(MessageType.SYSTEM_MESSAGE.getPrefix()).append(CharUtil.enter());
             linkContext.getConfiguration().commandExt.forEach((k, v) -> {
-                builder.append(k).append(" ").append(v).append("\r");
+                builder.append(k).append(" ").append(v).append(CharUtil.enter());
             });
             linkContext.getLink().writeToClient(builder.toString());
             return;
@@ -44,10 +45,10 @@ public class ShowCommand extends Command {
         UserStore userStore = linkContext.getConfiguration().getUserStore();
         Collection<User> users = userStore.range(Integer.parseInt(list[0]), Integer.parseInt(list[1]));
         StringBuilder builder = new StringBuilder();
-        builder.append("\r");
-        builder.append("name").append("\t").append("username\r");
+        builder.append(CharUtil.enter());
+        builder.append("name").append("\t").append("username").append(CharUtil.enter());
         for (User user : users) {
-            builder.append(user.getName()).append("\t").append(user.getUsername()).append("\r");
+            builder.append(user.getName()).append("\t").append(user.getUsername()).append(CharUtil.enter());
         }
         linkContext.getLink().writeToClient(MessageFormatter.formatterMessage(MessageType.SYSTEM_MESSAGE.getPrefix(), builder.toString()));
     }
