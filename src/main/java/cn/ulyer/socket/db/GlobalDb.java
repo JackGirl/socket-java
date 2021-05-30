@@ -1,26 +1,20 @@
 package cn.ulyer.socket.db;
 
 import cn.hutool.core.exceptions.ExceptionUtil;
-import cn.ulyer.orm.config.OrmConfiguration;
-import cn.ulyer.orm.config.ResourceConfigurationLoader;
-import cn.ulyer.orm.factory.DefaultOrmFactory;
-import cn.ulyer.orm.factory.OrmFactory;
 import com.alibaba.druid.pool.DruidDataSource;
 import lombok.extern.slf4j.Slf4j;
+import org.beetl.sql.core.*;
+import org.beetl.sql.ext.DebugInterceptor;
 
 import java.util.Properties;
 
 @Slf4j
 public class GlobalDb {
 
-    public  static OrmConfiguration configuration ;
-    private static OrmFactory ormFactory;
+    private static SQLManager sqlManager;
 
     static {
         try {
-            configuration = ResourceConfigurationLoader.loadConfiguration("orm.yml");
-            ormFactory = new DefaultOrmFactory(configuration);
-
             Properties properties = new Properties();
             properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("jdbc.properties"));
 
@@ -30,7 +24,11 @@ public class GlobalDb {
             dataSource.setUrl(properties.getProperty("jdbc.url"));
             dataSource.setPassword(properties.getProperty("jdbc.password"));
 
-            ormFactory.setDataSource(dataSource);
+            ConnectionSource source = ConnectionSourceHelper.getSingle(dataSource);
+            sqlManager = new SQLManagerBuilder(source).build();
+            sqlManager.setInters(new Interceptor[]{new DebugInterceptor()});
+
+
         } catch (Exception e) {
             log.error("db config init error:{}", ExceptionUtil.stacktraceToString(e));
         }
@@ -38,7 +36,7 @@ public class GlobalDb {
 
 
     public static  <T> T getMapper(Class<T> clz){
-        return ormFactory.getMapper(clz);
+        return sqlManager.getMapper(clz);
     }
 
 

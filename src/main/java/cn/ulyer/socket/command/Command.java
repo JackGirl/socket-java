@@ -1,11 +1,9 @@
 package cn.ulyer.socket.command;
 
 
-import cn.ulyer.socket.context.LinkContext;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
-import java.io.IOException;
 import java.util.Map;
 
 

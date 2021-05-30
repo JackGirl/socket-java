@@ -1,12 +1,15 @@
 package cn.ulyer.socket.db;
 
-import cn.ulyer.orm.annotation.Param;
-import cn.ulyer.orm.annotation.Select;
+
 import cn.ulyer.socket.model.User;
+import org.beetl.sql.mapper.BaseMapper;
+import org.beetl.sql.mapper.annotation.Select;
+import org.beetl.sql.mapper.annotation.Sql;
 
-public interface UserMaper {
+public interface UserMaper extends BaseMapper<User> {
 
-    @Select(sql = "select * from user where username = #{username}")
-    User findUserByUserName(@Param("username") String username);
+    @Sql("select * from user where username = ?")
+    @Select
+    User findUserByUserName( String username);
 
 }
